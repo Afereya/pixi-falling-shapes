@@ -4,7 +4,7 @@ import Polygons from "./polygons.ts";
 class Pentagon extends Polygons {
   constructor() {
     super();
-    this.sides = 4;
+    this.sides = 5;
     this.typeShape = ShapeType.Pentagon;
     this.applyShapeGraphics();
   }

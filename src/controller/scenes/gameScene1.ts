@@ -1,10 +1,10 @@
 import { Application, Container, Graphics } from "pixi.js";
 import GameController from "../gameController.ts";
 import { BaseScene } from "./baseScene.ts";
-import { CONTETNT_HIGHT, CONTETNT_WIDTH } from "../../utils/consts.ts";
+import { CONTENT_HEIGHT, CONTENT_WIDTH } from "../../utils/consts.ts";
 import { BotUI } from "../../view/botUI.ts";
 import { TopUI } from "../../view/topUI.ts";
-import { CoverageMeter, CoverageResult } from "../../utils/сoverageMeter";
+import { CoverageMeter, CoverageResult } from "../../utils/coverageMeter";
 
 class GameScene1 extends BaseScene {
   private _app!: Application;
@@ -24,6 +24,7 @@ class GameScene1 extends BaseScene {
   private _init() {
     this._shapesRoot = this._createShapesRootContainer();
     this._container.addChild(this._shapesRoot);
+    this._container.addChild(this._createFrame());
 
     // const debugContainer = new Container;
     // this._app.stage.addChild(debugContainer);
@@ -61,7 +62,7 @@ class GameScene1 extends BaseScene {
     gameController.start();
 
     this._topUI = this._createTopUI();
-    gameController.OnRefreshUi = (shapeCount) => {
+    gameController.onRefreshUi = (shapeCount) => {
       this._topUI.setShapesOnRectangle(shapeCount);
     };
 
@@ -69,7 +70,7 @@ class GameScene1 extends BaseScene {
     this._botUI = this._createBotUI();
     this._botUI.setGravityLabel?.(gameController.gravity);
     this._botUI.onInputGravityLabel = (v: number) => {
-      gameController.setGravity(v);
+      this._botUI.setGravityLabel?.(gameController.setGravity(v));
     };
     this._botUI.onGravityPlus = () => {
       gameController.setGravity(gameController.gravity + STEP_G);
@@ -83,7 +84,9 @@ class GameScene1 extends BaseScene {
     const STEP_S = 1;
     this._botUI.setShapesPerSecondLabel?.(gameController.shapesPerSecond);
     this._botUI.onInputShapesPerSecondLabel = (v: number) => {
-      gameController.setShapesPerSecond(v);
+      this._botUI.setShapesPerSecondLabel?.(
+        gameController.setShapesPerSecond(v)
+      );
     };
     this._botUI.shapesPerSecondPlus = () => {
       gameController.setShapesPerSecond(
@@ -100,16 +103,13 @@ class GameScene1 extends BaseScene {
   }
 
   private _createShapesRootContainer(): Container {
-    const container = new Container();
-    container.setSize(CONTETNT_WIDTH, CONTETNT_HIGHT);
+    return new Container();
+  }
 
-    const frame = new Graphics()
-      .rect(0, 0, CONTETNT_WIDTH, CONTETNT_HIGHT)
+  private _createFrame(): Graphics {
+    return new Graphics()
+      .rect(0, 0, CONTENT_WIDTH, CONTENT_HEIGHT)
       .stroke({ width: 2, color: 0x000000 });
-
-    container.addChild(frame);
-
-    return container;
   }
 
   private _createBotUI() {
@@ -129,19 +129,26 @@ class GameScene1 extends BaseScene {
     return topUI;
   }
 
-  override setScale(screenWidth: number, screenHeight: number): void {
+  override setScale(
+    screenWidth: number,
+    screenHeight: number,
+    scale: number
+  ): void {
+    const fieldLeft = screenWidth / 2 - (CONTENT_WIDTH * scale) / 2;
+    const fieldTop = screenHeight / 2 - (CONTENT_HEIGHT * scale) / 2;
+
     if (this._topUI.container) {
-      const topUIx = screenWidth / 2 - CONTETNT_WIDTH / 2 - 1;
-      const topUIy = screenHeight / 2 - CONTETNT_HIGHT / 2 - 52;
-      this._topUI.container.style.left = `${topUIx}px`;
-      this._topUI.container.style.top = `${topUIy}px`;
+      this._topUI.container.style.left = `${fieldLeft}px`;
+      this._topUI.container.style.top = `${fieldTop - 52 * scale}px`;
+      this._topUI.container.style.transform = `scale(${scale})`;
     }
 
     if (this._botUI.container) {
-      const botUIx = screenWidth / 2 - CONTETNT_WIDTH / 2;
-      const botUIy = screenHeight / 2 + CONTETNT_HIGHT / 2 + 5;
-      this._botUI.container.style.left = `${botUIx}px`;
-      this._botUI.container.style.top = `${botUIy}px`;
+      this._botUI.container.style.left = `${fieldLeft}px`;
+      this._botUI.container.style.top = `${
+        fieldTop + CONTENT_HEIGHT * scale + 5 * scale
+      }px`;
+      this._botUI.container.style.transform = `scale(${scale})`;
     }
   }
 }

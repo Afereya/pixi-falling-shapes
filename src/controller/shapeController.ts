@@ -1,5 +1,4 @@
 import { Container } from "pixi.js";
-import { TimedEvent } from "../utils/ticker";
 import Shape from "../model/shapes/shape";
 
 const START_X = 250;
@@ -8,78 +7,70 @@ const START_Y = 0 - OFFSET_Y;
 
 class ShapeController {
   private _container!: Container;
-  private _ticker!: TimedEvent;
-  private _shape!: Shape;
-  private _gravityProvider!: () => number;
-  private _vy!: number; // velocity y
-  private _active!: boolean;
+  private readonly _shape: Shape;
+  private readonly _gravityProvider: () => number;
+  private _vy = 0;
+  private _active = false;
 
   constructor(container: Container, shape: Shape, gravityProvider: () => number) {
     this._container = container;
     this._shape = shape;
-    this._active = false;
-    this._vy = 0;
     this._gravityProvider = gravityProvider;
   }
 
-  public start(x?: number, y?: number) {
-    this.shape.setPosition(x ?? START_X, y ?? START_Y);
+  public start(x: number = START_X, y: number = START_Y, fieldHeight?: number) {
+    this.shape.setPosition(x, y);
     this._container.addChild(this.shape);
+    if (fieldHeight !== undefined) this._updateVisibility(fieldHeight);
   }
 
-  public nextTick(dt: number) {
-    if (!this.shape || this.shape.destroyed) return;
+  public nextTick(dt: number, fieldHeight: number): boolean {
+    if (this.shape.destroyed) return false;
     this.vy += this._gravityProvider() * dt;
     this.shape.y += this.vy * dt;
-    if (this.shape.y >= 0) this.active = true;
-
+    this._updateVisibility(fieldHeight);
     return true;
   }
 
-  public isOnContainer(container: number) {
-    return this.shape.y < container;
+  public isBelowContainer(fieldHeight: number): boolean {
+    return this._verticalBounds().top > fieldHeight;
   }
 
   public destroy(): void {
     this._active = false;
 
-    if (this.shape) {
+    if (!this.shape.destroyed) {
       this._container.removeChild(this.shape);
       this.shape.destroy();
-      this.shape = null;
-    }
-    if (this.ticker) {
-      this.ticker.destroy();
-      this.shape = null;
     }
   }
 
-  public set vy(value: any) {
+  private _verticalBounds(): { top: number; bottom: number } {
+    const bounds = this.shape.getLocalBounds();
+    return {
+      top: this.shape.y + bounds.y - this.shape.pivot.y,
+      bottom: this.shape.y + bounds.y + bounds.height - this.shape.pivot.y,
+    };
+  }
+
+  private _updateVisibility(fieldHeight: number): void {
+    const { top, bottom } = this._verticalBounds();
+    this._active = bottom >= 0 && top <= fieldHeight;
+  }
+
+  public set vy(value: number) {
     this._vy = value;
   }
-  public get vy(): any {
+  public get vy(): number {
     return this._vy;
   }
 
-  public set active(value: any) {
-    this._active = value;
-  }
-  public get active(): any {
+  public get active(): boolean {
     return this._active;
   }
 
-  public set shape(value: any) {
-    this._shape = value;
-  }
-  public get shape(): any {
+  public get shape(): Shape {
     return this._shape;
-  }
-
-  public set ticker(value: any) {
-    this._ticker = value;
-  }
-  public get ticker(): any {
-    return this._ticker;
   }
 }
 

@@ -1,5 +1,7 @@
-export class BaseScene {
-  constructor() {}
-
-  public setScale(screenWidth: number, screenHeight: number): void {}
+export abstract class BaseScene {
+  public abstract setScale(
+    screenWidth: number,
+    screenHeight: number,
+    scale: number
+  ): void;
 }

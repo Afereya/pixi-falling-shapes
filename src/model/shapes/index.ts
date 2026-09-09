@@ -5,8 +5,11 @@ import Quadrilateral from "./quadrilateral";
 import Pentagon from "./pentagon";
 import Hexagon from "./hexagon";
 import RandomShape from "./randomShape";
+import Shape from "./shape";
 
-const shapes: any[] = [
+type ShapeConstructor = new () => Shape;
+
+const shapes: ShapeConstructor[] = [
   Circle,
   Ellipse,
   Triangle,

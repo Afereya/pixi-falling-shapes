@@ -15,10 +15,6 @@ class Ellipse extends Shape {
     this.ellipse(0, 0, radiusX, radiusY);
     this.finally();
   }
-
-  private circellipseArealeArea(rx: number, ry: number): number {
-    return Math.PI * rx * ry;
-  }
 }
 
 export default Ellipse;

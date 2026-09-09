@@ -6,28 +6,18 @@ import {
   SHAPE_RADIUS,
   SHAPE_STROKE_WIDTH,
   SHAPE_STROKE_COLOR,
-  SHAPE_WIDTH,
-  SHAPE_HEIGHT,
 } from "../../utils/consts.ts";
 
 class Shape extends Graphics {
-  protected _active!: boolean;
   protected _typeShape!: ShapeType;
   protected _sides!: PolygonSides;
   protected _color!: number;
   protected _radius!: number;
-  protected _shapeWidth!: number;
-  protected _shapeHeight!: number;
-  protected _shapeRotation!: number;
-  protected _gravityValue!: number;
-  protected _area!: number;
 
   constructor() {
     super();
     this._color = randomColor();
     this._radius = SHAPE_RADIUS;
-    this._shapeWidth = SHAPE_WIDTH;
-    this._shapeHeight = SHAPE_HEIGHT;
   }
 
   protected applyShapeGraphics(): void {}
@@ -49,32 +39,11 @@ class Shape extends Graphics {
     this.y = y;
   }
 
-  public set area(value: number) {
-    this._area = value;
-  }
-  public get area(): number {
-    return this._area;
-  }
-
   public set sides(value: PolygonSides) {
     this._sides = value;
   }
   public get sides(): PolygonSides {
     return this._sides;
-  }
-
-  public set shapeHeight(value: number) {
-    this._shapeHeight = value;
-  }
-  public get shapeHeight(): number {
-    return this._shapeHeight;
-  }
-
-  public set shapeWidth(value: number) {
-    this._shapeWidth = value;
-  }
-  public get shapeWidth(): number {
-    return this._shapeWidth;
   }
 
   public set radius(value: number) {

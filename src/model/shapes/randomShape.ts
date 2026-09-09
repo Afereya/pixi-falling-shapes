@@ -15,7 +15,7 @@ class RandomShape extends Polygons {
     const curvePts = this._addCurve(pts);
 
     for (let i = 0; i < curvePts.length; i++) {
-      let point = curvePts[i];
+      const point = curvePts[i];
       if (i === 0) {
         this.moveTo(point.x, point.y);
         continue;
@@ -27,13 +27,13 @@ class RandomShape extends Polygons {
   }
 
   private _addCurve(points: Vec2[]) {
-    let strength = 2;
-    let newPts: currVec2[] = [];
+    const strength = 2;
+    const newPts: currVec2[] = [];
 
     newPts.push({ cx: 0, cy: 0, x: points[0].x, y: points[0].y });
     for (let i = 0; i < points.length; i++) {
-      let currP: Vec2 = points[i];
-      let nextP: Vec2 = points[(i + 1) % points.length];
+      const currP: Vec2 = points[i];
+      const nextP: Vec2 = points[(i + 1) % points.length];
 
       const mx = (currP.x + nextP.x) / 2;
       const my = (currP.y + nextP.y) / 2;
@@ -45,7 +45,7 @@ class RandomShape extends Polygons {
       const nx = -vy / len;
       const ny = vx / len;
 
-      const sign = Math.random() < 0.5 ? -1 : -1;
+      const sign = Math.random() < 0.5 ? -1 : 1;
       const offset = len * 0.5 * strength;
 
       const cx = mx + nx * offset * sign;

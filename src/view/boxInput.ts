@@ -1,10 +1,11 @@
 export default class BoxInput {
   public el: HTMLInputElement;
-  private _value: string | number = "";
+  private _value = "";
 
   constructor(initial: string | number = "", title?: string) {
     this.el = document.createElement("input");
-    this.el.type = "text";
+    this.el.type = "number";
+    this.el.inputMode = "decimal";
     this.el.className = "value-box";
 
     if (title) {
@@ -26,7 +27,7 @@ export default class BoxInput {
     return this;
   }
 
-  get(): string | number {
+  get(): string {
     return this._value;
   }
 

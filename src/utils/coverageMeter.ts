@@ -25,6 +25,7 @@ export class CoverageMeter {
   private lastW = 0;
   private lastH = 0;
   private frameCounter = 0;
+  private debugSprite: Sprite | null = null;
 
   private resolution: number;
   private alphaThreshold: number;
@@ -88,24 +89,21 @@ export class CoverageMeter {
     };
 
     if (this.debugContainer) {
-      let debugSprite: Sprite | null = null;
-      if (!debugSprite) {
-        debugSprite = new Sprite(this.rt!);
-        debugSprite.anchor.set(0);
-        debugSprite.position.set(16, 16);
-        debugSprite.scale.set(0.5);
-        this.debugContainer.addChild(debugSprite as any);
+      if (!this.debugSprite) {
+        this.debugSprite = new Sprite(this.rt!);
+        this.debugSprite.anchor.set(0);
+        this.debugSprite.position.set(16, 16);
+        this.debugSprite.scale.set(0.5);
+        this.debugContainer.addChild(this.debugSprite);
       } else {
-        // @ts-ignore
-        debugSprite.texture = this.rt;
+        this.debugSprite.texture = this.rt;
       }
     }
 
     if (Array.isArray(target)) {
       for (let i = 0; i < target.length; i++) {
         const o = target[i];
-        // @ts-ignore
-        if (!(o as any).renderable || !(o as any).worldVisible) continue;
+        if (!o.renderable || !o.visible) continue;
         renderOne(o);
       }
     } else {
@@ -123,7 +121,7 @@ export class CoverageMeter {
       clamped.byteOffset,
       clamped.byteLength
     );
-    const total = w * h;
+    const sampledTotal = w * h;
     const thr = this.alphaThreshold;
 
     let covered = 0;
@@ -132,14 +130,16 @@ export class CoverageMeter {
     }
 
     return {
-      pixelsCovered: covered,
-      pixelsTotal: total,
-      ratio: total > 0 ? covered / total : 0,
+      pixelsCovered: Math.round(covered / this.resolution ** 2),
+      pixelsTotal: Math.round(bounds.width * bounds.height),
+      ratio: sampledTotal > 0 ? covered / sampledTotal : 0,
       bounds: { x: 0, y: 0, width: bounds.width, height: bounds.height },
     };
   }
 
   destroy() {
+    this.debugSprite?.destroy();
+    this.debugSprite = null;
     if (this.rt) {
       this.rt.destroy(true);
       this.rt = null;

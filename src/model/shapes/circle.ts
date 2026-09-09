@@ -12,10 +12,6 @@ class Circle extends Shape {
     this.circle(0, 0, this.radius);
     this.finally();
   }
-
-  private circleArea(r: number): number {
-    return Math.PI * r * r;
-  }
 }
 
 export default Circle;

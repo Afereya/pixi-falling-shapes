@@ -19,7 +19,6 @@ export class TimedEvent {
 
   constructor() {
     this.update = this.update.bind(this);
-    TimedEvent.shared.add(this.update);
   }
 
   on(event: TickerEvent, handler: Handler): this {
@@ -74,6 +73,8 @@ export class TimedEvent {
   }
 
   destroy(): void {
+    this.running = false;
+    this.started = false;
     TimedEvent.shared.remove(this.update);
     this.handlers = { start: [], update: [], end: [] };
   }

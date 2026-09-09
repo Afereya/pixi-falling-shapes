@@ -4,7 +4,7 @@ import Polygons from "./polygons.ts";
 class Hexagon extends Polygons {
   constructor() {
     super();
-    this.sides = 4;
+    this.sides = 6;
     this.typeShape = ShapeType.Hexagon;
     this.applyShapeGraphics();
   }

@@ -1,38 +1,55 @@
 import { Application, Container, Graphics } from "pixi.js";
 import GameScene1 from "./scenes/gameScene1";
 import { BaseScene } from "./scenes/baseScene";
-import { CONTETNT_HIGHT, CONTETNT_WIDTH } from "../utils/consts";
+import { CONTENT_HEIGHT, CONTENT_WIDTH } from "../utils/consts";
 
 class SceneController {
   private _app!: Application;
   private _container!: Container;
   private _activeScene!: BaseScene;
 
+  private readonly _autoScale = () => {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const horizontalMargin = 16;
+    const controlsHeight = 112;
+    const scale = Math.max(
+      0.1,
+      Math.min(
+        1,
+        (screenWidth - horizontalMargin * 2) / CONTENT_WIDTH,
+        (screenHeight - controlsHeight) / CONTENT_HEIGHT
+      )
+    );
+
+    this._container.scale.set(scale);
+    this._container.position.set(screenWidth / 2, screenHeight / 2);
+    this._activeScene.setScale(screenWidth, screenHeight, scale);
+  };
+
   constructor(app: Application) {
     this._app = app;
-
-    // @ts-ignore:  Pixi
-    globalThis.__PIXI_APP__ = app;
 
     this._container = this._createBaseContainer();
     this._app.stage.addChild(this._container);
 
     this._startGame();
     this._autoScale();
+    window.addEventListener("resize", this._autoScale);
   }
 
   private _createBaseContainer(): Container {
     const container = new Container();
-    container.pivot.set(CONTETNT_WIDTH / 2, CONTETNT_HIGHT / 2);
-    container.setSize(CONTETNT_WIDTH, CONTETNT_HIGHT);
+    container.pivot.set(CONTENT_WIDTH / 2, CONTENT_HEIGHT / 2);
+    container.setSize(CONTENT_WIDTH, CONTENT_HEIGHT);
 
     const bg = new Graphics()
-      .rect(0, 0, CONTETNT_WIDTH, CONTETNT_HIGHT)
+      .rect(0, 0, CONTENT_WIDTH, CONTENT_HEIGHT)
       .fill(0xffffff);
     container.addChild(bg);
 
     const mask = new Graphics()
-      .rect(0, 0, CONTETNT_WIDTH, CONTETNT_HIGHT)
+      .rect(0, 0, CONTENT_WIDTH, CONTENT_HEIGHT)
       .fill(0xffffff);
     container.mask = mask;
     container.addChild(mask);
@@ -44,14 +61,6 @@ class SceneController {
     this._activeScene = new GameScene1(this._container, this._app);
   }
 
-  private _autoScale() {
-    this._app.renderer.resize(window.innerWidth, window.innerHeight);
-    this._container.position.set(
-      this._app.screen.width / 2,
-      this._app.screen.height / 2
-    );
-    this._activeScene.setScale(this._app.screen.width, this._app.screen.height);
-  }
 }
 
 export default SceneController;

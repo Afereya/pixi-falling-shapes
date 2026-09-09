@@ -1,11 +1,13 @@
 {
-  "name": "tz",
+  "name": "pixi-falling-shapes",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build",
+    "build:pages": "npm run typecheck && vite build --outDir docs",
     "preview": "vite preview"
   },
   "devDependencies": {
